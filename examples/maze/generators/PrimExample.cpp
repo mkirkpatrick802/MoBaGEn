@@ -17,8 +17,6 @@ std::vector<Point2D> PrimExample::getVisitables(World* w, const Point2D& p) {
   std::vector<Point2D> visitables;
   auto clearColor = Color::DarkGray;
 
-
-
   return visitables;
 }
 

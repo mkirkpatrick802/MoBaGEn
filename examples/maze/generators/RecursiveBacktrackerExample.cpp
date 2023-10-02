@@ -36,7 +36,13 @@ bool RecursiveBacktrackerExample::Step(World* w)
     }
     if(stack.size() > 1)
       w->SetNodeColor(stack.end()[-2], Color::Red);
-    
+
+
+    //Break Walls
+    if(target.x > current.x) w->SetEast(current, false);
+    if(target.x < current.x) w->SetWest(current, false);
+    if(target.y > current.y) w->SetSouth(current, false);
+    if(target.y < current.y) w->SetNorth(current, false);
     stack.push_back(target);
     return true;
   }

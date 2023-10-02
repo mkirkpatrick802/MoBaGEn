@@ -17,11 +17,15 @@ void JohnConway::Step(World& world)
           world.SetNext(point, true);
         else if(neighbors > 3)
           world.SetNext(point, false);
+        else //Double Buffering
+          world.SetNext(point, world.Get(point));
       }
       else
       {
         if(neighbors == 3)
           world.SetNext(point, true);
+        else //Double Buffering
+          world.SetNext(point, world.Get(point));
       }
     }
 }

@@ -18,11 +18,15 @@ void HexagonGameOfLife::Step(World& world)
           world.SetNext(point, false);
         else if(neighbors == 2)
           world.SetNext(point, true);
+        else //Double Buffering
+          world.SetNext(point, world.Get(point));
       }
       else
       {
         if(neighbors == 2)
           world.SetNext(point, true);
+        else //Double Buffering
+          world.SetNext(point, world.Get(point));
       }
     }
 }

@@ -1,40 +1,75 @@
 #include "Cat.h"
 #include "World.h"
-#include <stdexcept>
 
 Point2D Cat::Move(World* world)
 {
   const Point2D currentPos = world->getCat();
   int sideSize = world->getWorldSideSize();
-  int distance = 0;
-
-  //Distance
-  vector<int> dist(sideSize * sideSize, -1);
 
   //Visited
   vector<bool> visited(sideSize * sideSize, false);
 
+  //World Nodes
+  vector<Node> nodes(sideSize * sideSize, Node());
+
   //Queue
   queue<Point2D> queue;
   queue.push(currentPos);
+  int frontIndex = GetWorldIndex(sideSize, currentPos);
+  visited[frontIndex] = true;
+  nodes[frontIndex] = Node(currentPos, currentPos, 0, false);
 
+  //BFS
+  //TODO: Create a list of all the nodes in the world, each node has a distance value, a previous node,
+  //      and a bool on whether or not it is traversable.
   while(!queue.empty())
   {
     Point2D front = queue.front();
     queue.pop();
 
-    visited[(front.y + sideSize / 2) * (sideSize) + front.x + sideSize / 2] = true;
-    distance++;
     for (auto neighbor : GetNeighbors(world, front))
     {
-      int worldIndex = (neighbor.y + sideSize / 2) * (sideSize) + neighbor.x + sideSize / 2;
+      int worldIndex = GetWorldIndex(sideSize, neighbor);
 
       if(visited[worldIndex]) continue;
-      dist[worldIndex] = distance;
+      else visited[worldIndex] = true;
+
+      nodes[worldIndex] = Node(neighbor, front, nodes[GetWorldIndex(sideSize, front)].distance + 1, true);
 
       queue.push(neighbor);
     }
   }
 
-  return Point2D(0, 0);
+  //Pathfinding
+  //TODO: Find the border node with the smallest weight, then backtrack from that node to the cat position.
+  //      Add all these backtracks to a vector. Then return the last node in that vector.
+  //      This would find the best path to the cat.
+  Node smallestWeightNode;
+  for (auto node : nodes)
+  {
+    if(!node.isVisitable) continue;
+
+    if(world->catWinsOnSpace(node.pos))
+    {
+      if(smallestWeightNode.distance == -1) smallestWeightNode = node;
+
+      if(node.distance < smallestWeightNode.distance)
+        smallestWeightNode = node;
+    }
+  }
+
+  vector<Node> path;
+  Node nextNode = smallestWeightNode;
+  path.push_back(nextNode);
+  while (nextNode.pos != nextNode.lastPos)
+  {
+    nextNode = nodes[GetWorldIndex(sideSize, nextNode.lastPos)];
+    path.push_back(nextNode);
+  }
+
+  path.pop_back();
+
+  cout << path.back().pos.x << " " << path.back().pos.y << '\n';
+
+  return path.back().pos;
 }

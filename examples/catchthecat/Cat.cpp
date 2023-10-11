@@ -2,23 +2,39 @@
 #include "World.h"
 #include <stdexcept>
 
-Point2D Cat::Move(World* world) {
-  auto rand = Random::Range(0, 5);
-  auto pos = world->getCat();
-  switch (rand) {
-    case 0:
-      return World::NE(pos);
-    case 1:
-      return World::NW(pos);
-    case 2:
-      return World::E(pos);
-    case 3:
-      return World::W(pos);
-    case 4:
-      return World::SW(pos);
-    case 5:
-      return World::SE(pos);
-    default:
-      throw "random out of range";
+Point2D Cat::Move(World* world)
+{
+  const Point2D currentPos = world->getCat();
+  int sideSize = world->getWorldSideSize();
+  int distance = 0;
+
+  //Distance
+  vector<int> dist(sideSize * sideSize, -1);
+
+  //Visited
+  vector<bool> visited(sideSize * sideSize, false);
+
+  //Queue
+  queue<Point2D> queue;
+  queue.push(currentPos);
+
+  while(!queue.empty())
+  {
+    Point2D front = queue.front();
+    queue.pop();
+
+    visited[(front.y + sideSize / 2) * (sideSize) + front.x + sideSize / 2] = true;
+    distance++;
+    for (auto neighbor : GetNeighbors(world, front))
+    {
+      int worldIndex = (neighbor.y + sideSize / 2) * (sideSize) + neighbor.x + sideSize / 2;
+
+      if(visited[worldIndex]) continue;
+      dist[worldIndex] = distance;
+
+      queue.push(neighbor);
+    }
   }
+
+  return Point2D(0, 0);
 }

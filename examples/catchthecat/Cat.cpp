@@ -69,7 +69,7 @@ Point2D Cat::Move(World* world)
 
   path.pop_back();
 
-  cout << path.back().pos.x << " " << path.back().pos.y << '\n';
+  cout << "CAT: " << path.back().pos.x << " " << path.back().pos.y << '\n';
 
   return path.back().pos;
 }
